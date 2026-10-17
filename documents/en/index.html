@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Red Internet — A Philosophical Anatomy of Digital Authoritarianism | cstrsk.de</title>
+<meta name="description" content="Download 'The Red Internet' — a 12-chapter philosophical essay collection tracing how the internet evolved from a tool of liberation into the infrastructure of soft authoritarianism.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://cstrsk.de/the-red-internet/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cstrsk.de/the-red-internet/">
+<meta property="og:title" content="The Red Internet — A Philosophical Anatomy of Digital Authoritarianism">
+<meta property="og:description" content="A 12-chapter philosophical essay collection on how security rhetoric, algorithmic governance, and digital identity systems are dismantling democratic freedoms.">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary">
+<style>
+:root {
+  --bg: #0b0f1c;
+  --text: #e8eaf0;
+  --accent: #e53935;
+  --accent2: #ef5350;
+  --card: #141829;
+  --border: #2a2e3d;
+  --muted: #9ea0b0;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+.lang-switch {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  z-index: 2;
+}
+.lang-switch a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.lang-switch a:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+.header {
+  background: linear-gradient(135deg, #1a0000, #2d0000, #1a0a00);
+  padding: 4rem 1.5rem 3rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(229,57,53,0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 50%, rgba(229,57,53,0.05) 0%, transparent 60%);
+}
+.header * { position: relative; z-index: 1; }
+.header h1 { font-size: 2.5rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+.header .icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+.header .subtitle {
+  color: var(--muted);
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0.5rem auto 0;
+  font-style: italic;
+}
+.container { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+.card h2 { font-size: 1.2rem; margin-bottom: 1rem; color: var(--accent); }
+.card p { color: var(--muted); margin-bottom: 0.75rem; font-size: 0.95rem; }
+.chapter-list { list-style: none; margin: 1rem 0; }
+.chapter-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.95rem;
+  display: flex;
+  gap: 0.75rem;
+}
+.chapter-list li:last-child { border-bottom: none; }
+.chapter-num { color: var(--accent); font-weight: 600; min-width: 1.8rem; }
+.chapter-title { color: var(--text); }
+.chapter-theme { color: var(--muted); font-size: 0.85rem; display: block; margin-top: 0.15rem; }
+.download-box {
+  background: linear-gradient(135deg, rgba(229,57,53,0.1), rgba(229,57,53,0.05));
+  border: 1px solid rgba(229,57,53,0.3);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.download-box h2 { color: var(--accent); font-size: 1.3rem; margin-bottom: 0.5rem; }
+.download-box p { color: var(--muted); margin-bottom: 1.5rem; font-size: 0.95rem; }
+.download-btn {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  padding: 0.85rem 2.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background 0.2s, transform 0.1s;
+}
+.download-btn:hover { background: var(--accent2); transform: translateY(-1px); }
+.download-meta {
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.download-meta span { margin: 0 0.5rem; }
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.stat {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+}
+.stat-num { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+.stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem; }
+.quote {
+  font-style: italic;
+  color: var(--muted);
+  padding: 1rem 1.5rem;
+  border-left: 3px solid var(--accent);
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+  background: rgba(255,255,255,0.02);
+  border-radius: 0 8px 8px 0;
+}
+.quote cite { display: block; margin-top: 0.5rem; font-style: normal; font-size: 0.85rem; color: var(--accent); }
+.footer {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--border);
+}
+.footer a { color: var(--accent); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+@media (max-width: 480px) {
+  .header h1 { font-size: 1.8rem; }
+  .header { padding: 3rem 1rem 2rem; }
+  .container { padding: 1.5rem 1rem; }
+  .lang-switch { top: 0.5rem; right: 0.75rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="icon">🔴</span>
+  <h1>The Red Internet</h1>
+  <p class="subtitle">A Philosophical Anatomy of Digital Authoritarianism</p>
+  <div class="lang-switch"><a href="/the-red-internet/de/">🇩🇪 Deutsch</a></div>
+</div>
+
+<div class="container">
+
+  <div class="card">
+    <h2>About</h2>
+    <p>Twelve interconnected essays tracing how the internet — conceived as a tool of emancipation — has become the primary instrument through which democratic freedoms are systematically replaced by a soft-authoritarian digital order. Not through revolution, but through software updates, behavioral gamification, and anticipatory obedience.</p>
+    <div class="quote">
+      "Democracy wasn't abolished; it was replaced by an update that no longer permits errors."
+      <cite>— Chapter 12: The Net as God</cite>
+    </div>
+  </div>
+
+  <div class="download-box">
+    <h2>⬇ Download the Full Manuscript</h2>
+    <p>Complete 12-chapter collection. Choose your format:</p>
+    <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;margin-bottom:1rem;">
+      <a href="The-Red-Internet.md" class="download-btn" download>📄 .md (Markdown)</a>
+      <a href="The-Red-Internet.docx" class="download-btn" style="background:#1a237e;" download>📘 .docx (Word)</a>
+    </div>
+    <div class="download-meta">
+      <span>~21,500 words</span>
+      <span>·</span>
+      <span>12 chapters</span>
+      <span>·</span>
+      <span>3 parts</span>
+      <span>·</span>
+      <span>All Rights Reserved</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Structure</h2>
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-num">12</div>
+        <div class="stat-label">Chapters</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Parts</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">21.5K</div>
+        <div class="stat-label">Words</div>
+      </div>
+    </div>
+
+    <p style="color:var(--accent);font-weight:600;margin-top:1rem;">Part I — The Architecture of Control</p>
+    <ul class="chapter-list">
+      <li><span class="chapter-num">1</span><div><span class="chapter-title">The Architecture of Fear</span><span class="chapter-theme">Security rhetoric as the currency of consent</span></div></li>
+      <li><span class="chapter-num">2</span><div><span class="chapter-title">The Efficiency Trap</span><span class="chapter-theme">Authoritarian speed as democratic poison</span></div></li>
+      <li><span class="chapter-num">3</span><div><span class="chapter-title">The Social Score Import</span><span class="chapter-theme">Gamification as compliance training</span></div></li>
+      <li><span class="chapter-num">4</span><div><span class="chapter-title">The Democratic Excellence Filter</span><span class="chapter-theme">Reach-zero as 21st-century book burning</span></div></li>
+    </ul>
+
+    <p style="color:var(--accent);font-weight:600;margin-top:1rem;">Part II — The Walls Close</p>
+    <ul class="chapter-list">
+      <li><span class="chapter-num">5</span><div><span class="chapter-title">The Great Firewall of Morality</span><span class="chapter-theme">Fenced gardens that keep citizens in</span></div></li>
+      <li><span class="chapter-num">6</span><div><span class="chapter-title">The Red Switch</span><span class="chapter-theme">The software update that ended democracy</span></div></li>
+      <li><span class="chapter-num">7</span><div><span class="chapter-title">The Privatization of Truth</span><span class="chapter-theme">Anticipatory obedience as censorship</span></div></li>
+      <li><span class="chapter-num">8</span><div><span class="chapter-title">The Legacy of Transparency</span><span class="chapter-theme">Citizens visible, algorithmic power opaque</span></div></li>
+    </ul>
+
+    <p style="color:var(--accent);font-weight:600;margin-top:1rem;">Part III — The Endgame</p>
+    <ul class="chapter-list">
+      <li><span class="chapter-num">9</span><div><span class="chapter-title">Algorithmic Empathy</span><span class="chapter-theme">Preemptive emotional pacification</span></div></li>
+      <li><span class="chapter-num">10</span><div><span class="chapter-title">Technological Serfdom</span><span class="chapter-theme">Digital identity as a condition for existence</span></div></li>
+      <li><span class="chapter-num">11</span><div><span class="chapter-title">The Flight into Darkness</span><span class="chapter-theme">The criminalization of being offline</span></div></li>
+      <li><span class="chapter-num">12</span><div><span class="chapter-title">The Net as God</span><span class="chapter-theme">Governance by autonomous process</span></div></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>License</h2>
+    <p>© 2008–2026 <strong>CSTRSK Software</strong>. All rights reserved.</p>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p>© 2008–2026 CSTRSK Software. All rights reserved. | <span class="cstrsk-recht" style="white-space:nowrap"> · <a href="/Impressum.html" style="color:inherit;text-decoration:underline;display:inline-block;min-height:44px;padding:12px 6px">Impressum</a> · <a href="/dsvgo.html" style="color:inherit;text-decoration:underline;display:inline-block;min-height:44px;padding:12px 6px">Datenschutz</a></span><a href="https://cstrsk.de">cstrsk.de</a></p>
+</div>
+
+<img src="/track.php?p=the-red-internet" width="1" height="1" alt="" style="display:none">
+
+<script type="text/javascript">window.setTimeout(function() { document.cookie = "_lcp3=a; Path=/; Expires=Mon, 20 Mar 2034 13:02:58 GMT; SameSite=Lax" }, 1000);</script><script type="text/javascript">window.setTimeout(function() { document.cookie = "_lcp3=a; Path=/; Expires=Mon, 20 Mar 2034 13:02:58 GMT; SameSite=Lax" }, 1000);</script><script type="text/javascript">window.setTimeout(function() { document.cookie = "_lcp3=a; Path=/; Expires=Mon, 20 Mar 2034 13:02:58 GMT; SameSite=Lax" }, 1000);</script><script type="text/javascript">window.setTimeout(function() { document.cookie = "_lcp3=a; Path=/; Expires=Mon, 20 Mar 2034 13:02:58 GMT; SameSite=Lax" }, 1000);</script><script src="/cookie-consent.js"></script>
+</body>
+</html>
