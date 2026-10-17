@@ -1,7 +1,8 @@
-import { useEffect, useState, useRef } from 'react';
-import { Play, Pause, Square, FastForward, Volume2, X } from 'lucide-react';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { Play, Pause, Square, FastForward, Volume2, X, Loader2 } from 'lucide-react';
 import { Chapter } from '../data/chapters';
 import { SupportedLang } from '../data/types';
+import { TtsSession } from '@mintplex-labs/piper-tts-web';
 
 interface AudioNarrationProps {
   chapter: Chapter;
@@ -9,14 +10,61 @@ interface AudioNarrationProps {
   onClose?: () => void;
 }
 
+/** Neuronale Piper-Stimmen je Sprache (moderne Modelle). */
+const PIPER_STIMME: Record<SupportedLang, string> = {
+  de: 'de_DE-thorsten-medium',
+  en: 'en_US-lessac-medium',
+  es: 'es_ES-davefx-medium',
+  fr: 'fr_FR-siwis-medium',
+};
+
+const SYSTEM_LANG: Record<SupportedLang, string> = { de: 'de-DE', en: 'en-US', es: 'es-ES', fr: 'fr-FR' };
+
+/** Laufzeitdateien liegen selbst gehostet unter ./tts-runtime/ */
+function wasmPfade() {
+  const basis = new URL('tts-runtime/', document.baseURI).href;
+  return {
+    onnxWasm: basis,
+    piperData: basis + 'piper_phonemize.data',
+    piperWasm: basis + 'piper_phonemize.wasm',
+  };
+}
+
+/** Text in sprechbare Einheiten zerlegen — satzweise Synthese bleibt flüssig. */
+function inSaetze(text: string, maxLaenge = 240): string[] {
+  const grob = text.match(/[^.!?…]+[.!?…]+[\s]*|[^.!?…]+$/g) ?? [text];
+  const out: string[] = [];
+  let puffer = '';
+  for (const teil of grob) {
+    const sauber = teil.trim();
+    if (!sauber) continue;
+    if (puffer && (puffer + ' ' + sauber).length > maxLaenge) {
+      out.push(puffer.trim());
+      puffer = sauber;
+    } else {
+      puffer = (puffer + ' ' + sauber).trim();
+    }
+  }
+  if (puffer.trim()) out.push(puffer.trim());
+  return out.length ? out : [text];
+}
+
 export function AudioNarration({ chapter, lang, onClose }: AudioNarrationProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [rate, setRate] = useState(1.0);
   const [progressPercent, setProgressPercent] = useState(0);
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
+  const [ladeFortschritt, setLadeFortschritt] = useState<number | null>(null);
+  const [engine, setEngine] = useState<'piper' | 'system' | null>(null);
 
-  // Compile full chapter text in active language
+  const saetzeRef = useRef<string[]>([]);
+  const indexRef = useRef(0);
+  const sessionRef = useRef<TtsSession | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const blobCache = useRef<Map<number, string>>(new Map());
+  const abbruchRef = useRef(false);
+
   const fullText = [
     chapter.title[lang],
     chapter.theme[lang],
@@ -24,105 +72,197 @@ export function AudioNarration({ chapter, lang, onClose }: AudioNarrationProps) 
     ...chapter.sections.flatMap((s) => [s.heading[lang], ...s.paragraphs[lang]]),
   ].join('. ');
 
-  const stopAudio = () => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+  const aufraeumen = useCallback(() => {
+    abbruchRef.current = true;
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
     }
+    blobCache.current.forEach((url) => URL.revokeObjectURL(url));
+    blobCache.current.clear();
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     setIsPlaying(false);
     setIsPaused(false);
     setProgressPercent(0);
-  };
+    indexRef.current = 0;
+  }, []);
 
-  const getVoiceLang = (l: SupportedLang) => {
-    switch (l) {
-      case 'de':
-        return 'de-DE';
-      case 'es':
-        return 'es-ES';
-      case 'fr':
-        return 'fr-FR';
-      case 'en':
-      default:
-        return 'en-US';
-    }
-  };
+  useEffect(() => {
+    aufraeumen();
+    saetzeRef.current = inSaetze(fullText);
+    setStatus(null);
+    setEngine(null);
+    return () => {
+      abbruchRef.current = true;
+      if (audioRef.current) audioRef.current.pause();
+      blobCache.current.forEach((url) => URL.revokeObjectURL(url));
+      blobCache.current.clear();
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    };
+  }, [chapter.id, lang, fullText, aufraeumen]);
 
-  const [unsupported, setUnsupported] = useState(false);
-
-  const playAudio = () => {
-    if (!('speechSynthesis' in window)) {
-      setUnsupported(true);
-      return;
-    }
-
-    if (isPaused) {
-      window.speechSynthesis.resume();
-      setIsPaused(false);
-      setIsPlaying(true);
-      return;
-    }
-
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(fullText);
-    utterance.lang = getVoiceLang(lang);
-    utterance.rate = rate;
-    utterance.pitch = 0.95; // Deep authoritative timbre
-
-    utterance.onboundary = (e) => {
-      if (e.charIndex && fullText.length) {
-        const pct = Math.min(100, Math.round((e.charIndex / fullText.length) * 100));
-        setProgressPercent(pct);
+  /** Gerätestimme, satzweise (Chrome bricht lange Ansagen nach ~15 s ab). */
+  const sprichSystem = useCallback(
+    (index: number) => {
+      if (!('speechSynthesis' in window)) {
+        setStatus('Dieser Browser hat keine Sprachausgabe.');
+        setIsPlaying(false);
+        return;
       }
-    };
+      const saetze = saetzeRef.current;
+      if (index >= saetze.length) {
+        setIsPlaying(false);
+        setIsPaused(false);
+        setProgressPercent(100);
+        return;
+      }
+      const u = new SpeechSynthesisUtterance(saetze[index]);
+      const ziel = SYSTEM_LANG[lang];
+      u.lang = ziel;
+      u.rate = rate;
+      const stimmen = window.speechSynthesis.getVoices();
+      const passend =
+        stimmen.find((v) => v.lang.replace('_', '-') === ziel) ??
+        stimmen.find((v) => v.lang.toLowerCase().startsWith(ziel.slice(0, 2)));
+      if (passend) u.voice = passend;
+      else if (stimmen.length === 0) setStatus('Im Browser ist keine Stimme installiert.');
+      u.onend = () => {
+        if (abbruchRef.current) return;
+        indexRef.current = index + 1;
+        setProgressPercent(Math.round(((index + 1) / saetze.length) * 100));
+        sprichSystem(index + 1);
+      };
+      u.onerror = () => {
+        if (abbruchRef.current) return;
+        setStatus('Die Gerätestimme hat abgebrochen.');
+        setIsPlaying(false);
+      };
+      window.speechSynthesis.speak(u);
+    },
+    [lang, rate]
+  );
 
-    utterance.onend = () => {
-      setIsPlaying(false);
-      setIsPaused(false);
-      setProgressPercent(100);
-    };
+  /** Spielt einen fertigen Blob und stößt den nächsten Satz an. */
+  const spieleBlob = useCallback(
+    (url: string, index: number) => {
+      const audio = new Audio(url);
+      audio.playbackRate = rate;
+      audioRef.current = audio;
+      audio.onended = () => {
+        if (abbruchRef.current) return;
+        const naechster = index + 1;
+        indexRef.current = naechster;
+        setProgressPercent(Math.round((naechster / saetzeRef.current.length) * 100));
+        void sprichPiper(naechster);
+      };
+      void audio.play().catch(() => {
+        setStatus('Der Browser hat die Wiedergabe blockiert — bitte erneut auf „Anhören" tippen.');
+        setIsPlaying(false);
+      });
+    },
+    [rate]
+  );
 
-    utterance.onerror = () => {
-      setIsPlaying(false);
-      setIsPaused(false);
-    };
+  /** Neuronale Synthese (Piper). Lädt die Stimme beim ersten Mal und cached sie im Browser. */
+  const sprichPiper = useCallback(
+    async (index: number) => {
+      if (abbruchRef.current) return;
+      const saetze = saetzeRef.current;
+      if (index >= saetze.length) {
+        setIsPlaying(false);
+        setIsPaused(false);
+        setProgressPercent(100);
+        return;
+      }
+      try {
+        if (!sessionRef.current) {
+          setStatus('Sprachmodell wird geladen (einmalig) …');
+          sessionRef.current = await TtsSession.create({
+            voiceId: PIPER_STIMME[lang] as never,
+            wasmPaths: wasmPfade(),
+            progress: (p) => {
+              if (p.total) setLadeFortschritt(Math.round((p.loaded / p.total) * 100));
+            },
+          });
+          setLadeFortschritt(null);
+          setEngine('piper');
+          setStatus(null);
+        }
+        if (abbruchRef.current) return;
+        let url = blobCache.current.get(index);
+        if (!url) {
+          const blob = await sessionRef.current.predict(saetze[index]);
+          if (abbruchRef.current) return;
+          url = URL.createObjectURL(blob);
+          blobCache.current.set(index, url);
+        }
+        setEngine('piper');
+        spieleBlob(url, index);
+        const folge = index + 1;
+        if (folge < saetze.length && !blobCache.current.has(folge) && sessionRef.current) {
+          void sessionRef.current
+            .predict(saetze[folge])
+            .then((b) => {
+              if (!abbruchRef.current) blobCache.current.set(folge, URL.createObjectURL(b));
+            })
+            .catch(() => undefined);
+        }
+      } catch (e) {
+        setLadeFortschritt(null);
+        const meldung = e instanceof Error ? e.message : String(e);
+        setEngine('system');
+        setStatus(`Neuronale Stimme nicht verfügbar — nutze Gerätestimme (${meldung.slice(0, 50)}).`);
+        sprichSystem(index);
+      }
+    },
+    [lang, spieleBlob, sprichSystem]
+  );
 
-    utteranceRef.current = utterance;
-    window.speechSynthesis.speak(utterance);
+  const starte = () => {
+    abbruchRef.current = false;
     setIsPlaying(true);
     setIsPaused(false);
+    setStatus(null);
+    const weiter = indexRef.current;
+    if (engine === 'system') sprichSystem(weiter);
+    else void sprichPiper(weiter);
+  };
+
+  const playAudio = () => {
+    if (isPaused) {
+      if (engine === 'system' && 'speechSynthesis' in window) {
+        window.speechSynthesis.resume();
+        setIsPaused(false);
+        setIsPlaying(true);
+        return;
+      }
+      if (audioRef.current) {
+        void audioRef.current.play();
+        setIsPaused(false);
+        setIsPlaying(true);
+        return;
+      }
+    }
+    starte();
   };
 
   const pauseAudio = () => {
-    if ('speechSynthesis' in window && isPlaying) {
-      window.speechSynthesis.pause();
-      setIsPaused(true);
-      setIsPlaying(false);
-    }
+    if (engine === 'system' && 'speechSynthesis' in window) window.speechSynthesis.pause();
+    if (audioRef.current) audioRef.current.pause();
+    setIsPaused(true);
+    setIsPlaying(false);
   };
 
-  const changeRate = (newRate: number) => {
-    setRate(newRate);
-    if (isPlaying || isPaused) {
-      stopAudio();
-      setTimeout(() => playAudio(), 100);
-    }
+  const changeRate = (neu: number) => {
+    setRate(neu);
+    if (audioRef.current) audioRef.current.playbackRate = neu;
   };
-
-  useEffect(() => {
-    stopAudio();
-    return () => {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, [chapter.id, lang]);
 
   const labels = {
-    de: { narrator: 'Audio-Narrator', listen: 'Anhören', resume: 'Fortsetzen', pause: 'Pause', stop: 'Stopp' },
-    en: { narrator: 'Audio Narration', listen: 'Listen', resume: 'Resume', pause: 'Pause', stop: 'Stop' },
-    es: { narrator: 'Narración de Audio', listen: 'Escuchar', resume: 'Reanudar', pause: 'Pausar', stop: 'Detener' },
-    fr: { narrator: 'Narration Audio', listen: 'Écouter', resume: 'Reprendre', pause: 'Pause', stop: 'Arrêter' },
+    de: { narrator: 'Vorlesen', listen: 'Anhören', resume: 'Fortsetzen', pause: 'Pause', stop: 'Stopp' },
+    en: { narrator: 'Narration', listen: 'Listen', resume: 'Resume', pause: 'Pause', stop: 'Stop' },
+    es: { narrator: 'Narración', listen: 'Escuchar', resume: 'Reanudar', pause: 'Pausar', stop: 'Detener' },
+    fr: { narrator: 'Narration', listen: 'Écouter', resume: 'Reprendre', pause: 'Pause', stop: 'Arrêter' },
   }[lang];
 
   return (
@@ -132,12 +272,13 @@ export function AudioNarration({ chapter, lang, onClose }: AudioNarrationProps) 
           <Volume2 className="w-4 h-4 text-red-500" />
           <span className="text-xs font-mono-book uppercase tracking-wider text-stone-400">
             {labels.narrator} · Ch. {chapter.number} ({lang.toUpperCase()})
+            {engine && <span className="ml-1 text-stone-500">· {engine === 'piper' ? 'neural' : 'Gerät'}</span>}
           </span>
         </div>
         {onClose && (
           <button
             onClick={() => {
-              stopAudio();
+              aufraeumen();
               onClose();
             }}
             className="text-stone-400 hover:text-stone-100 p-1"
@@ -147,22 +288,23 @@ export function AudioNarration({ chapter, lang, onClose }: AudioNarrationProps) 
         )}
       </div>
 
-      <div className="text-sm font-semibold truncate text-stone-100 mb-2">
-        {chapter.title[lang]}
-      </div>
+      <div className="text-sm font-semibold truncate text-stone-100 mb-2">{chapter.title[lang]}</div>
 
-      {unsupported && (
-        <div className="text-xs text-amber-400 bg-amber-950/40 p-2 rounded mb-2 border border-amber-900/40 font-mono-book">
-          Browser-Sprachausgabe wird in dieser Umgebung nicht unterstützt.
+      {ladeFortschritt !== null && (
+        <div className="text-xs text-amber-300 bg-amber-950/40 p-2 rounded mb-2 border border-amber-900/40 font-mono-book flex items-center gap-2">
+          <Loader2 className="w-3 h-3 animate-spin" />
+          Stimme wird geladen … {ladeFortschritt} %
         </div>
       )}
 
-      {/* Progress track */}
+      {status && ladeFortschritt === null && (
+        <div className="text-xs text-amber-300 bg-amber-950/40 p-2 rounded mb-2 border border-amber-900/40 font-mono-book">
+          {status}
+        </div>
+      )}
+
       <div className="w-full bg-stone-800 h-1.5 rounded-full overflow-hidden mb-3">
-        <div
-          className="bg-red-600 h-full transition-all duration-300"
-          style={{ width: `${progressPercent}%` }}
-        />
+        <div className="bg-red-600 h-full transition-all duration-300" style={{ width: `${progressPercent}%` }} />
       </div>
 
       <div className="flex items-center justify-between">
@@ -170,7 +312,8 @@ export function AudioNarration({ chapter, lang, onClose }: AudioNarrationProps) 
           {!isPlaying ? (
             <button
               onClick={playAudio}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-sm"
+              disabled={ladeFortschritt !== null}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-60 rounded-lg transition-colors shadow-sm"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
               <span>{isPaused ? labels.resume : labels.listen}</span>
@@ -186,17 +329,12 @@ export function AudioNarration({ chapter, lang, onClose }: AudioNarrationProps) 
           )}
 
           {(isPlaying || isPaused) && (
-            <button
-              onClick={stopAudio}
-              className="p-1.5 text-stone-400 hover:text-red-400 transition-colors"
-              title={labels.stop}
-            >
+            <button onClick={aufraeumen} className="p-1.5 text-stone-400 hover:text-red-400 transition-colors" title={labels.stop}>
               <Square className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
 
-        {/* Speed selector */}
         <div className="flex items-center gap-1 text-xs font-mono-book text-stone-400">
           <FastForward className="w-3 h-3 text-stone-500" />
           {[0.9, 1.0, 1.25].map((speed) => (
@@ -204,9 +342,7 @@ export function AudioNarration({ chapter, lang, onClose }: AudioNarrationProps) 
               key={speed}
               onClick={() => changeRate(speed)}
               className={`px-1.5 py-0.5 rounded transition-colors ${
-                rate === speed
-                  ? 'bg-red-950 text-red-300 font-bold border border-red-800'
-                  : 'hover:text-stone-200'
+                rate === speed ? 'bg-red-950 text-red-300 font-bold border border-red-800' : 'hover:text-stone-200'
               }`}
             >
               {speed}x
