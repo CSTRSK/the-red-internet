@@ -209,7 +209,7 @@ export const CHAPTERS_PART_1: Chapter[] = [
         },
         {
           title: "EDPB-EDPS Joint Opinion 04/2022 on the CSAM Proposal",
-          url: "https://edpb.europa.eu/our-work-tools/our-documents/edpb-edps-joint-opinion/edpb-edps-joint-opinion-42022-proposal-european_en",
+          url: "https://www.edpb.europa.eu/documents/legislative-opinion/edpb-edps-joint-opinion-042022-on-the-proposal-for-a-regulation-of_en",
           organization: "European Data Protection Board",
           type: "Regulatory Legal Assessment",
         },
@@ -367,7 +367,7 @@ export const CHAPTERS_PART_1: Chapter[] = [
           es: "Sustituyó los procesos democráticos por algoritmos propietarios ajenos al escrutinio electoral.",
           fr: "A supplanté la délibération citoyenne au profit d'algorithmes opaques échappant à tout contrôle parlementaire.",
         },
-        sourceUrl: "https://www.smartnation.gov.sg",
+        sourceUrl: "https://www.smartnation.gov.sg/publications/frameworks-and-blueprints/",
         sourceName: "Smart Nation Digital Government Portal",
         documentType: "Smart City Blueprint & Framework Documentation",
       },
@@ -385,7 +385,7 @@ export const CHAPTERS_PART_1: Chapter[] = [
       externalSources: [
         {
           title: "Smart Nation Singapore: Core Principles of Algorithmic Infrastructure",
-          url: "https://www.smartnation.gov.sg",
+          url: "https://www.smartnation.gov.sg/publications/frameworks-and-blueprints/",
           organization: "Smart Nation & Digital Government Group",
           type: "Official Government Strategy",
         },
@@ -539,7 +539,7 @@ export const CHAPTERS_PART_1: Chapter[] = [
           es: "Demostró que las sociedades occidentales aceptan puntuaciones de conducta cuando se presentan como civismo ecológico.",
           fr: "A prouvé que les sociétés occidentales adoptent avec enthousiasme l'évaluation comportementale lorsqu'elle est parée d'écologie.",
         },
-        sourceUrl: "https://www.comune.bologna.it",
+        sourceUrl: "https://www.bolognatoday.it/cronaca/piano-digitale-comune-bologna.html",
         sourceName: "Comune di Bologna Official Portal",
         documentType: "Municipal Project Documentation",
       },
@@ -556,8 +556,8 @@ export const CHAPTERS_PART_1: Chapter[] = [
       ],
       externalSources: [
         {
-          title: "Comune di Bologna: Smart Citizen Wallet Pilot",
-          url: "https://www.comune.bologna.it",
+          title: "Bologna Today: Digitalplan der Stadt - Smart Citizen Wallet (Pilotprojekt)",
+          url: "https://www.bolognatoday.it/cronaca/piano-digitale-comune-bologna.html",
           organization: "City of Bologna Administration",
           type: "Official Municipal Initiative",
         },
@@ -730,8 +730,8 @@ export const CHAPTERS_PART_1: Chapter[] = [
           type: "Official Statutory Regulation",
         },
         {
-          title: "Electronic Frontier Foundation: DSA and the Risks of Algorithmic De-Amplification",
-          url: "https://www.eff.org",
+          title: "Electronic Frontier Foundation: DSA - Risiken algorithmischer De-Amplification",
+          url: "https://www.eff.org/issues/dsa",
           organization: "EFF",
           type: "Digital Rights Legal Analysis",
         },

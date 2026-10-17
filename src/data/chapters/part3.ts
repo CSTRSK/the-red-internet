@@ -162,7 +162,7 @@ export const CHAPTERS_PART_3: Chapter[] = [
         },
         {
           title: "Center for Humane Technology: The Ledger of Harms and Affective AI",
-          url: "https://www.humanetech.com",
+          url: "https://ledger.humanetech.com/",
           organization: "Center for Humane Technology",
           type: "Ethical Impact Assessment",
         },
@@ -303,7 +303,7 @@ export const CHAPTERS_PART_3: Chapter[] = [
         },
         {
           title: "Federal Court of Canada: Freedom Convoy Bank Account Freezes Review",
-          url: "https://www.fct-cf.gc.ca",
+          url: "https://decisions.fca-caf.gc.ca/fca-caf/decisions/en/item/521758/index.do",
           organization: "Federal Court of Canada",
           type: "Judicial Review on Financial Freezes",
         },
@@ -443,8 +443,8 @@ export const CHAPTERS_PART_3: Chapter[] = [
           type: "Official Government Enforcement Action",
         },
         {
-          title: "Coin Center Lawsuit Against OFAC Sanctions on Open Source Software",
-          url: "https://www.coincenter.org",
+          title: "Coin Center: Klage gegen die OFAC-Sanktionierung von Tornado Cash",
+          url: "https://www.newsletter.coincenter.org/p/were-suing-the-government-again",
           organization: "Coin Center Research",
           type: "Constitutional Privacy Litigation",
         },

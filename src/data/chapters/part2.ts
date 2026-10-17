@@ -156,13 +156,13 @@ export const CHAPTERS_PART_2: Chapter[] = [
       externalSources: [
         {
           title: "RFC 8499 & DNS Architecture in Sovereign Network Environments",
-          url: "https://www.ietf.org",
+          url: "https://www.rfc-editor.org/rfc/rfc8499.html",
           organization: "Internet Engineering Task Force (IETF)",
           type: "Technical Internet Standard",
         },
         {
-          title: "Carnegie Endowment: The Splinternet and Global BGP Fragmentation",
-          url: "https://carnegieendowment.org",
+          title: "Carnegie Endowment: Cyber and Digital Policy - Fragmentierung und Souveraenitaet",
+          url: "https://carnegieendowment.org/programs/technology-and-international-affairs/collections/cyber",
           organization: "Carnegie Endowment for International Peace",
           type: "Policy Analysis",
         },
@@ -330,7 +330,7 @@ export const CHAPTERS_PART_2: Chapter[] = [
         },
         {
           title: "EFF: NSA Interception Architecture (AT&T Room 641A Historical Precedent)",
-          url: "https://www.eff.org/pages/nsa-spying",
+          url: "https://www.eff.org/nsa-spying",
           organization: "Electronic Frontier Foundation",
           type: "Investigative Case Archive",
         },
@@ -447,7 +447,7 @@ export const CHAPTERS_PART_2: Chapter[] = [
           es: "Pionero en convertir a las empresas privadas en jueces sumarios de la palabra pública.",
           fr: "Pionnier du modèle déléguant la censure et la justice sommaire aux géants technologiques privés.",
         },
-        sourceUrl: "https://www.bmj.de/DE/themen/digitales/netzdg/netzdg_node.html",
+        sourceUrl: "https://www.gesetze-im-internet.de/netzdg/BJNR335210017.html",
         sourceName: "Federal Ministry of Justice (BMJ) Official Information",
         documentType: "German Federal Statute (NetzDG)",
       },
@@ -464,14 +464,14 @@ export const CHAPTERS_PART_2: Chapter[] = [
       ],
       externalSources: [
         {
-          title: "Netzwerkdurchsetzungsgesetz (NetzDG) - Official Text",
-          url: "https://www.bmj.de/DE/themen/digitales/netzdg/netzdg_node.html",
+          title: "Netzwerkdurchsetzungsgesetz (NetzDG) - amtlicher Volltext",
+          url: "https://www.gesetze-im-internet.de/netzdg/BJNR335210017.html",
           organization: "Bundesministerium der Justiz",
           type: "Federal Legal Statute",
         },
         {
           title: "Human Rights Watch: Germany's Flawed Social Media Law and Global Fallout",
-          url: "https://www.hrw.org",
+          url: "https://www.hrw.org/news/2018/02/14/germany-flawed-social-media-law",
           organization: "Human Rights Watch",
           type: "Human Rights Documentation",
         },
