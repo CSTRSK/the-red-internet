@@ -358,7 +358,7 @@ export function AudioNarration({ chapter, lang, onClose }: AudioNarrationProps) 
                 rate === speed ? 'bg-red-950 text-red-300 font-bold border border-red-800' : 'hover:text-stone-200'
               }`}
             >
-              {speed}x
+              {speed.toFixed(1)}x
             </button>
           ))}
         </div>
