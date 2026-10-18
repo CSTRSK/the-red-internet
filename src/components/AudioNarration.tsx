@@ -30,29 +30,37 @@ function wasmPfade() {
   };
 }
 
-/** Text in sprechbare Einheiten zerlegen — satzweise Synthese bleibt flüssig. */
-function inSaetze(text: string, maxLaenge = 240): string[] {
-  const grob = text.match(/[^.!?…]+[.!?…]+[\s]*|[^.!?…]+$/g) ?? [text];
+/** Text in sprechbare Einheiten zerlegen — ein Satz je Einheit, damit Punkt und Komma hörbar bleiben. */
+function inSaetze(text: string, maxLaenge = 180): string[] {
+  const roh = text.match(/[^.!?…]+[.!?…]+[\s]*|[^.!?…]+$/g) ?? [text];
   const out: string[] = [];
-  let puffer = '';
-  for (const teil of grob) {
-    const sauber = teil.trim();
-    if (!sauber) continue;
-    if (puffer && (puffer + ' ' + sauber).length > maxLaenge) {
-      out.push(puffer.trim());
-      puffer = sauber;
-    } else {
-      puffer = (puffer + ' ' + sauber).trim();
+  for (const teil of roh) {
+    const satz = teil.trim();
+    if (!satz) continue;
+    if (satz.length <= maxLaenge) {
+      out.push(satz);
+      continue;
     }
+    // Überlange Sätze an Komma/Semikolon/Doppelpunkt trennen — dort macht die Stimme eine kurze Pause
+    const stuecke = satz.split(/(?<=[,;:])\s+/);
+    let puffer = '';
+    for (const stueck of stuecke) {
+      if (puffer && (puffer + ' ' + stueck).length > maxLaenge) {
+        out.push(puffer.trim());
+        puffer = stueck;
+      } else {
+        puffer = (puffer + ' ' + stueck).trim();
+      }
+    }
+    if (puffer.trim()) out.push(puffer.trim());
   }
-  if (puffer.trim()) out.push(puffer.trim());
   return out.length ? out : [text];
 }
 
 export function AudioNarration({ chapter, lang, onClose }: AudioNarrationProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [rate, setRate] = useState(1.0);
+  const [rate, setRate] = useState(0.9);
   const [progressPercent, setProgressPercent] = useState(0);
   const [status, setStatus] = useState<string | null>(null);
   const [ladeFortschritt, setLadeFortschritt] = useState<number | null>(null);
@@ -153,7 +161,12 @@ export function AudioNarration({ chapter, lang, onClose }: AudioNarrationProps) 
         const naechster = index + 1;
         indexRef.current = naechster;
         setProgressPercent(Math.round((naechster / saetzeRef.current.length) * 100));
-        void sprichPiper(naechster);
+        // Sprechpause: nach Satzende deutlich laenger als nach einem Komma-Teilstueck
+        const vorherige = saetzeRef.current[index] ?? '';
+        const pause = /[.!?…]["'»)]?\s*$/.test(vorherige) ? 450 : 230;
+        window.setTimeout(() => {
+          if (!abbruchRef.current) void sprichPiper(naechster);
+        }, pause);
       };
       void audio.play().catch(() => {
         setStatus('Der Browser hat die Wiedergabe blockiert — bitte erneut auf „Anhören" tippen.');
@@ -337,7 +350,7 @@ export function AudioNarration({ chapter, lang, onClose }: AudioNarrationProps) 
 
         <div className="flex items-center gap-1 text-xs font-mono-book text-stone-400">
           <FastForward className="w-3 h-3 text-stone-500" />
-          {[0.9, 1.0, 1.25].map((speed) => (
+          {[0.8, 0.9, 1.0, 1.1].map((speed) => (
             <button
               key={speed}
               onClick={() => changeRate(speed)}
