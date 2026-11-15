@@ -1,0 +1,41 @@
+{
+  "name": "Das Rote Internet",
+  "short_name": "Rotes Internet",
+  "description": "Eine philosophische Anatomie des digitalen Autoritarismus — zwölf Kapitel.",
+  "lang": "de",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "../",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0d0508",
+  "theme_color": "#12060a",
+  "categories": [
+    "books",
+    "education"
+  ],
+  "icons": [
+    {
+      "src": "../icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "../icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Kapitel 1 — Die Architektur der Angst",
+      "url": "./#kapitel-1"
+    },
+    {
+      "name": "Sprachen / Languages",
+      "url": "../"
+    }
+  ]
+}
