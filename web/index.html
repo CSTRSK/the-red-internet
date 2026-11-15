@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Red Internet / Das Rote Internet — vier Sprachen</title>
+<meta name="description" content="The Red Internet — a philosophical anatomy of digital authoritarianism in twelve chapters. Available in German, English, Spanish and French.">
+<link rel="canonical" href="https://cstrsk.de/the-red-internet/">
+<link rel="alternate" hreflang="de" href="https://cstrsk.de/the-red-internet/de/">
+<link rel="alternate" hreflang="en" href="https://cstrsk.de/the-red-internet/en/">
+<link rel="alternate" hreflang="es" href="https://cstrsk.de/the-red-internet/es/">
+<link rel="alternate" hreflang="fr" href="https://cstrsk.de/the-red-internet/fr/">
+<link rel="alternate" hreflang="x-default" href="https://cstrsk.de/the-red-internet/de/">
+<meta name="theme-color" content="#12060a">
+<link rel="manifest" href="de/manifest.json">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<style>
+:root {
+  --bg: #0d0508; --bg2: #160a10; --karte: #1c0d14; --rand: #3a1520;
+  --rot: #e63946; --rot-hell: #ff6b78; --text: #e8dfe2; --text2: #b8a8ad; --dim: #9c8788;
+}
+@media (prefers-color-scheme: light) {
+  :root { --bg: #fdf8f9; --bg2: #f7eef0; --karte: #fff; --rand: #e8cfd4;
+          --rot: #b3121f; --rot-hell: #8f0d18; --text: #1a1214; --text2: #4a3d40; --dim: #6d5c60; }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: var(--bg); color: var(--text); padding: 1.5rem;
+  font-family: Georgia, 'Iowan Old Style', serif;
+}
+.karte {
+  background: var(--karte); border: 1px solid var(--rand);
+  border-top: 3px solid var(--rot); border-radius: 10px;
+  padding: 2.2rem 1.8rem; max-width: 540px; width: 100%;
+}
+.marke {
+  font-family: ui-monospace, Menlo, monospace; font-size: .74rem;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--rot);
+  display: block; margin-bottom: 1.1rem;
+}
+h1 { margin: 0 0 .5rem; font-size: clamp(1.5rem, 5vw, 2rem); line-height: 1.15; }
+p.unter { margin: 0 0 1.8rem; color: var(--text2); font-style: italic; font-size: .95rem; }
+ul { list-style: none; margin: 0; padding: 0; }
+li { margin: 0 0 .5rem; }
+a.sprache {
+  display: flex; align-items: center; gap: .9rem;
+  min-height: 56px; padding: .75rem 1rem;
+  background: var(--bg2); border: 1px solid var(--rand); border-radius: 7px;
+  color: var(--text); text-decoration: none;
+  transition: border-color .15s, background .15s;
+}
+a.sprache:hover, a.sprache:focus-visible { border-color: var(--rot); background: var(--karte); }
+a.sprache .code {
+  font-family: ui-monospace, Menlo, monospace; font-size: .72rem;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--rot);
+  min-width: 2rem;
+}
+a.sprache .text { display: flex; flex-direction: column; gap: .15rem; }
+a.sprache .name { font-size: 1.02rem; }
+a.sprache .unter2 {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: .76rem; color: var(--dim);
+}
+a.sprache .pfeil { margin-left: auto; color: var(--dim); font-size: 1.1rem; }
+a:focus-visible { outline: 2px solid var(--rot); outline-offset: 2px; }
+footer {
+  margin-top: 1.8rem; padding-top: 1.2rem; border-top: 1px solid var(--rand);
+  font-family: system-ui, -apple-system, sans-serif; font-size: .82rem;
+}
+footer nav { display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; }
+footer a {
+  color: var(--text2); text-decoration: none;
+  min-height: 44px; min-width: 44px; padding: 0 .2rem;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+footer a:hover, footer a:focus-visible { color: var(--rot-hell); text-decoration: underline; }
+footer p { margin: .8rem 0 0; color: var(--dim); }
+</style>
+</head>
+<body>
+<div class="karte">
+  <span class="marke">CSTRSK</span>
+  <h1>The Red Internet</h1>
+  <p class="unter">Das Rote Internet — eine philosophische Anatomie des digitalen Autoritarismus. Zwölf Kapitel in vier Sprachen, vollständig im Browser, ohne Tracking.</p>
+  <ul>
+    <li><a class="sprache" href="de/" hreflang="de" lang="de"><span class="code">DE</span><span class="text"><span class="name">Deutsch</span><span class="unter2">Das Rote Internet</span></span><span class="pfeil">→</span></a></li>
+    <li><a class="sprache" href="en/" hreflang="en" lang="en"><span class="code">EN</span><span class="text"><span class="name">English</span><span class="unter2">The Red Internet</span></span><span class="pfeil">→</span></a></li>
+    <li><a class="sprache" href="es/" hreflang="es" lang="es"><span class="code">ES</span><span class="text"><span class="name">Español</span><span class="unter2">La Internet Roja</span></span><span class="pfeil">→</span></a></li>
+    <li><a class="sprache" href="fr/" hreflang="fr" lang="fr"><span class="code">FR</span><span class="text"><span class="name">Français</span><span class="unter2">L'Internet Rouge</span></span><span class="pfeil">→</span></a></li>
+  </ul>
+  <footer>
+    <nav aria-label="Rechtliches">
+      <a href="https://cstrsk.de/">Startseite</a>
+      <a href="https://cstrsk.de/impressum.html">Impressum</a>
+      <a href="https://cstrsk.de/datenschutz.html">Datenschutz</a>
+      <a href="https://github.com/CSTRSK/the-red-internet">GitHub</a>
+    </nav>
+    <p>© CSTRSK · Kein Tracking, keine Cookies, keine externen Schriften.</p>
+  </footer>
+</div>
+</body>
+</html>

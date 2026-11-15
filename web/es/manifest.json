@@ -1,0 +1,41 @@
+{
+  "name": "La Internet Roja",
+  "short_name": "Internet Roja",
+  "description": "Una anatomía filosófica del autoritarismo digital — doce capítulos.",
+  "lang": "es",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "../",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0d0508",
+  "theme_color": "#12060a",
+  "categories": [
+    "books",
+    "education"
+  ],
+  "icons": [
+    {
+      "src": "../icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "../icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Capítulo 1 — La Arquitectura del Miedo",
+      "url": "./#kapitel-1"
+    },
+    {
+      "name": "Sprachen / Languages",
+      "url": "../"
+    }
+  ]
+}
